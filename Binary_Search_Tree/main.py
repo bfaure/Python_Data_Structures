@@ -72,6 +72,20 @@ class binary_search_tree:
 
 	def delete_node(self,node):
 
+		## -----
+		# Improvements since prior lesson
+
+		# Protect against deleting a node not found in the tree
+		if node==None or self.find(node.value)==None:
+			print "Node to be deleted not found in the tree!"
+			return None 
+
+		# If the node to be deleted is the root node
+		if node.parent==None:
+			self.root=None 
+			return None 
+		## -----
+
 		# returns the node with min value in tree rooted at input node
 		def min_value_node(n):
 			current=n
