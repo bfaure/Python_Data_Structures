@@ -46,6 +46,23 @@ class linked_list:
 			if cur_idx==index: return cur_node.data
 			cur_idx+=1
 
+	# Sets the data at index 'index' equal to 'data'.
+	# Indices begin at 0. If the 'index' is greater than or equal 
+	# to the length of the linked list the item will be appended onto
+	# the end of the linked list.
+	def set(self,index,data):
+		if index>=self.length():
+			self.append(data)
+			return
+		cur_node=self.head
+		cur_idx=0
+		while True:
+			cur_node=cur_node.next
+			if cur_idx==index: 
+				cur_node.data=data
+				return
+			cur_idx+=1
+
 	# Deletes the node at index 'index'.
 	def erase(self,index):
 		if index>=self.length():
