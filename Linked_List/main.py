@@ -65,7 +65,10 @@ class linked_list:
 	def __getitem__(self,index):
 		return self.get(index)
 
-	# (added after video)
+
+	#######################################################
+	# Functions added after video tutorial
+
 	# Inserts a new node at index 'index' containing data 'data'.
 	# Indices begin at 0. If the provided index is greater than or 
 	# equal to the length of the linked list the 'data' will be appended.
@@ -85,7 +88,27 @@ class linked_list:
 			prior_node=cur_node
 			cur_idx+=1
 
-	# (added after video)
+	# Inserts the node 'node' at index 'index'. Indices begin at 0.
+	# If the 'index' is greater than or equal to the length of the linked 
+	# list the 'node' will be appended.
+	def insert_node(self,index,node):
+		if index>=self.length(): # append the node
+			cur_node=self.head
+			while cur_node.next!=None:
+				cur_node=cur_node.next
+			cur_node.next=node
+			return
+		cur_node=self.head
+		prior_node=self.head
+		cur_idx=0
+		while True:
+			cur_node=cur_node.next
+			if cur_idx==index: 
+				prior_node.next=node
+				return
+			prior_node=cur_node
+			cur_idx+=1
+
 	# Sets the data at index 'index' equal to 'data'.
 	# Indices begin at 0. If the 'index' is greater than or equal 
 	# to the length of the linked list a warning will be printed 
