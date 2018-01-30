@@ -342,21 +342,21 @@ class AVLTree:
 a=AVLTree()
 
 
-
+'''
 for i in range(10):
 	print 'Inserting ',i
 	a.insert(i)
 	a.print_tree()
 	a.print_levels()
-
-
 '''
+
+
 from random import randint
-for _ in range(10):
+for _ in range(100):
 	a.insert(randint(0,100))
-	print '-'*10
 	a.print_tree()
-'''
+	a.print_levels()
+
 
 '''
 # Left Left Case
