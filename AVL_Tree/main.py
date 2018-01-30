@@ -4,11 +4,71 @@ class node:
 		self.left_child=None
 		self.right_child=None
 		self.parent=None # pointer to parent node in tree
-		self.height=None # height of node in tree (max dist. to leaf)
+		self.height=1 # height of node in tree (max dist. to leaf) NEW FOR AVL
 
 class AVLTree:
 	def __init__(self):
 		self.root=None
+
+	'''
+	# NEW FOR AVL
+	def check_balance(self,cur_node):
+		if abs(cur_node.left_child.height-cur_node.right_child.height)>1:
+			self.rebalance(cur_node)
+		if cur_node.parent!=None:
+			self.check_balance(cur_node.parent)
+
+	# NEW FOR AVL
+	def rebalance(self,cur_node):
+		if cur_node.left_child.height-cur_node.right_child.height>1:
+			if cur_node.left_child.left_child.height>cur_node.left_child.right_child.height:
+				# right rotate cur_node
+				pass
+			else:
+				# left right rotate cur_node
+				pass
+		else:
+			if cur_node.right_child.left_child.height>cur_node.right_child.right_child.height:
+				# 
+	'''
+
+	# Recursively re-calculates the heights for nodes
+	# above cur_node, while re-calculating heights, if it
+	# comes across an instance where the AVL rules are broken it 
+	# will call the rebalance function to fix the problem.
+	def _recalculate_heights(self,cur_node):
+		if cur_node.parent==None: return
+
+		'''
+		new_height=1+cur_node.height
+		prior_height=cur_node.parent.height
+
+		if new_height>prior_height:
+			cur_node.parent.height=new_height
+		'''
+
+		left_height,right_height=0,0
+		if cur_node.parent.left_child==cur_node and cur_node.parent.right_child!=None:
+			left_height=cur_node.height 
+			right_height=cur_node.parent.right_child.height
+		if cur_node.parent.right_child==cur_node and cur_node.parent.left_child!=None:
+			left_height=cur_node.parent.left_child.height
+			right_height=cur_node.height 
+		if abs(left_height-right_height)>1:
+			print 'AVL Broken'	
+
+		new_height=1+cur_node.height 
+		if new_height>cur_node.parent.height:
+			cur_node.parent.height=new_height
+
+		self.recalculate_heights(cur_node.parent)
+
+	# Provided an instance where AVL rules are broken from _recalculate_heights
+	# this function will figure out which of the 4 cases the node is in and will
+	# take action accordingly to fix the issue.
+	def _rebalance_node(self,cur_node):
+		cur_node.
+
 
 	def insert(self,value):
 		if self.root==None:
@@ -21,12 +81,14 @@ class AVLTree:
 			if cur_node.left_child==None:
 				cur_node.left_child=node(value)
 				cur_node.left_child.parent=cur_node # set parent
+				self.recalculate_heights(cur_node.left_child)
 			else:
 				self._insert(value,cur_node.left_child)
 		elif value>cur_node.value:
 			if cur_node.right_child==None:
 				cur_node.right_child=node(value)
 				cur_node.right_child.parent=cur_node # set parent
+				self.recalculate_heights(cur_node.right_child)
 			else:
 				self._insert(value,cur_node.right_child)
 		else:
@@ -39,7 +101,7 @@ class AVLTree:
 	def _print_tree(self,cur_node):
 		if cur_node!=None:
 			self._print_tree(cur_node.left_child)
-			print str(cur_node.value)
+			print '%s, h=%d'%(str(cur_node.value),cur_node.height)
 			self._print_tree(cur_node.right_child)
 
 	def height(self):
@@ -169,5 +231,18 @@ class AVLTree:
 
 a=AVLTree()
 
+a.insert(10)
+a.insert(5)
+a.insert(15)
 
+a.print_tree()
 
+print '-'*10
+
+a.insert(20)
+a.print_tree()
+
+print '-'*10
+
+a.insert(30)
+a.print_tree()
