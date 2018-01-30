@@ -6,6 +6,9 @@ class node:
 		self.parent=None # pointer to parent node in tree
 		self.height=1 # height of node in tree (max dist. to leaf) NEW FOR AVL
 
+	def __repr__(self):
+		return str(self.value)
+
 class AVLTree:
 	def __init__(self):
 		self.root=None
@@ -36,7 +39,7 @@ class AVLTree:
 	# above cur_node, while re-calculating heights, if it
 	# comes across an instance where the AVL rules are broken it 
 	# will call the rebalance function to fix the problem.
-	def _recalculate_heights(self,cur_node):
+	def _recalculate_heights(self,cur_node,path=[]):
 		if cur_node.parent==None: return
 
 		'''
@@ -47,6 +50,8 @@ class AVLTree:
 			cur_node.parent.height=new_height
 		'''
 
+		path=[cur_node]+path
+
 		left_height,right_height=0,0
 		if cur_node.parent.left_child==cur_node and cur_node.parent.right_child!=None:
 			left_height=cur_node.height 
@@ -56,18 +61,93 @@ class AVLTree:
 			right_height=cur_node.height 
 		if abs(left_height-right_height)>1:
 			print 'AVL Broken'	
+			print 'Path: ',path
+			self._rebalance_nodes(path)
 
 		new_height=1+cur_node.height 
 		if new_height>cur_node.parent.height:
 			cur_node.parent.height=new_height
 
-		self.recalculate_heights(cur_node.parent)
+		self._recalculate_heights(cur_node.parent,path)
 
 	# Provided an instance where AVL rules are broken from _recalculate_heights
 	# this function will figure out which of the 4 cases the node is in and will
 	# take action accordingly to fix the issue.
-	def _rebalance_node(self,cur_node):
-		cur_node.
+	def _rebalance_nodes(self,path):
+		print "Rebalancing nodes: ",path
+		# using rules from https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
+		z=path[0] # first unbalanced node
+		y=path[1] # child of z that comes on path from latest insert
+		x=path[2] # grandchild of z that comes on path from latest insert
+
+		if y==z.left_child and z==y.left_child:
+			# left left case
+			# right rotate z...
+			sub_root=z.parent
+			t3=y.right_child
+			y.right_child=z
+			z.parent=y
+			z.left_child=t3
+			if t3!=None: t3.parent=z
+			y.parent=sub_root
+			if y.parent==None: self.root=y
+
+		elif y==z.left_child and x==y.right_child:
+			# left right case
+			# left rotate y...
+			t2=x.left_child
+			z.left_child=x
+			x.parent=z
+			x.left_child=y
+			y.parent=x
+			y.right_child=t2
+			if t2!=None: t2.parent=y
+			# right rotate z...
+			sub_root=z.parent
+			t3=x.right_child
+			x.left_child=y
+			y.parent=x
+			x.right_child=z
+			z.parent=x
+			z.left_child=t3
+			if t3!=None: t3.parent=z
+			x.parent=sub_root
+			if x.parent==None: self.root=y
+
+		elif y==z.right_child and x==y.right_child:
+			# right right case
+			# left rotate z...
+			sub_root=z.parent
+			t2=y.left_child
+			y.left_child=z
+			z.parent=y
+			z.right_child=t2
+			if t2!=None: t2.parent=z
+			y.parent=sub_root
+			if y.parent==None: self.root=y
+
+		elif y==x.right_child and x==y.left_child:
+			# right left case
+			# right rotate y...
+			t3=x.right_child
+			z.right_child==x
+			x.parent=z
+			x.right_child=y
+			y.parent=x
+			y.left_child=t3
+			if t3!=None: t3.parent=y
+			# left rotate z...
+			sub_root=z.parent
+			t2=x.left_child
+			x.left_child=z
+			z.parent=x
+			z.right_child=t2
+			if t2!=None: t2.parent=z
+			x.parent=sub_root
+			if x.parent==None: self.root=x
+
+		else:
+			raise ValueError('Path could not be identified!')
 
 
 	def insert(self,value):
@@ -81,14 +161,14 @@ class AVLTree:
 			if cur_node.left_child==None:
 				cur_node.left_child=node(value)
 				cur_node.left_child.parent=cur_node # set parent
-				self.recalculate_heights(cur_node.left_child)
+				self._recalculate_heights(cur_node.left_child)
 			else:
 				self._insert(value,cur_node.left_child)
 		elif value>cur_node.value:
 			if cur_node.right_child==None:
 				cur_node.right_child=node(value)
 				cur_node.right_child.parent=cur_node # set parent
-				self.recalculate_heights(cur_node.right_child)
+				self._recalculate_heights(cur_node.right_child)
 			else:
 				self._insert(value,cur_node.right_child)
 		else:
