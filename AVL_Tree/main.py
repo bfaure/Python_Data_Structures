@@ -38,7 +38,7 @@ class AVLTree:
 			left_height=cur_node.parent.left_child.height
 			right_height=cur_node.height 
 		'''
-		left_height,right_height=1,1
+		left_height,right_height=0,0
 		if cur_node.parent.left_child!=None:
 			left_height=cur_node.parent.left_child.height
 		if cur_node.parent.right_child!=None:
@@ -47,7 +47,10 @@ class AVLTree:
 		if abs(left_height-right_height)>1:
 			print 'AVL Broken'	
 			#print 'Path: ',path
+			path=[cur_node.parent]+path
 			self._rebalance_nodes(path)
+			#print 'After rebalancing:'
+			#self.print_levels()
 			#self._recalculate_heights(path[-1])
 			return
 
@@ -60,19 +63,21 @@ class AVLTree:
 	# Returns the height of the provided node, value is based
 	# on the max of the values of the nodes children. If node is
 	# None, value will be 0.
-	def _get_height(self,cur_node):
+	def get_height(self,cur_node):
 		if cur_node==None:
 			return 0
 		return cur_node.height
 
 	def right_rotate(self,z):
-		sub_root=z.parent
+		sub_root=z.parent # save parent of input
+		# perform rotation
 		y=z.left_child
 		t3=y.right_child
 		y.right_child=z
 		z.parent=y
 		z.left_child=t3
 		if t3!=None: t3.parent=z
+		# Re-connect original parent of input
 		y.parent=sub_root
 		if y.parent==None:
 				self.root=y
@@ -81,15 +86,22 @@ class AVLTree:
 				y.parent.left_child=y
 			else:
 				y.parent.right_child=y		
+		# Update heights
+		z.height=1+max(self.get_height(z.left_child),
+			self.get_height(z.right_child))
+		y.height=1+max(self.get_height(y.left_child),
+			self.get_height(y.right_child))
 
 	def left_rotate(self,z):
-		sub_root=z.parent
+		sub_root=z.parent # save parent of input
+		# perform rotation
 		y=z.right_child
 		t2=y.left_child
 		y.left_child=z
 		z.parent=y
 		z.right_child=t2
 		if t2!=None: t2.parent=z
+		# Re-connect original parent of input
 		y.parent=sub_root
 		if y.parent==None: 
 			self.root=y
@@ -98,6 +110,11 @@ class AVLTree:
 				y.parent.left_child=y
 			else:
 				y.parent.right_child=y
+		# Update heights
+		z.height=1+max(self.get_height(z.left_child),
+			self.get_height(z.right_child))
+		y.height=1+max(self.get_height(y.left_child),
+			self.get_height(y.right_child))
 
 
 	# Provided an instance where AVL rules are broken from _recalculate_heights
@@ -324,23 +341,14 @@ class AVLTree:
 
 a=AVLTree()
 
-a.insert(10)
-a.insert(20)
-a.insert(5)
-a.insert(3)
-a.insert(4)
 
-a.print_tree()
 
-print '-'*10
-a.print_levels()
-
-'''
 for i in range(10):
+	print 'Inserting ',i
 	a.insert(i)
-	print '-'*10
 	a.print_tree()
-'''
+	a.print_levels()
+
 
 '''
 from random import randint
