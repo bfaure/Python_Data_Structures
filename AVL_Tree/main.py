@@ -57,6 +57,49 @@ class AVLTree:
 
 		self._recalculate_heights(cur_node.parent,path)
 
+	# Returns the height of the provided node, value is based
+	# on the max of the values of the nodes children. If node is
+	# None, value will be 0.
+	def _get_height(self,cur_node):
+		if cur_node==None:
+			return 0
+		return cur_node.height
+
+	def right_rotate(self,z):
+		sub_root=z.parent
+		y=z.left_child
+		t3=y.right_child
+		y.right_child=z
+		z.parent=y
+		z.left_child=t3
+		if t3!=None: t3.parent=z
+		y.parent=sub_root
+		if y.parent==None:
+				self.root=y
+		else:
+			if y.parent.left_child==z:
+				y.parent.left_child=y
+			else:
+				y.parent.right_child=y		
+
+	def left_rotate(self,z):
+		sub_root=z.parent
+		y=z.right_child
+		t2=y.left_child
+		y.left_child=z
+		z.parent=y
+		z.right_child=t2
+		if t2!=None: t2.parent=z
+		y.parent=sub_root
+		if y.parent==None: 
+			self.root=y
+		else:
+			if y.parent.left_child==z:
+				y.parent.left_child=y
+			else:
+				y.parent.right_child=y
+
+
 	# Provided an instance where AVL rules are broken from _recalculate_heights
 	# this function will figure out which of the 4 cases the node is in and will
 	# take action accordingly to fix the issue.
@@ -70,6 +113,7 @@ class AVLTree:
 		if y==z.left_child and x==y.left_child:
 			# left left case
 			# right rotate z...
+			'''
 			print "Left Left Case"
 			sub_root=z.parent
 			t3=y.right_child
@@ -85,11 +129,14 @@ class AVLTree:
 					y.parent.left_child=y
 				else:
 					y.parent.right_child=y
+			'''
+			self.right_rotate(z)
 
 		elif y==z.left_child and x==y.right_child:
 			# left right case
 			# left rotate y...
 			print "Left Right Case"
+			'''
 			t2=x.left_child
 			z.left_child=x
 			x.parent=z
@@ -97,7 +144,11 @@ class AVLTree:
 			y.parent=x
 			y.right_child=t2
 			if t2!=None: t2.parent=y
+			'''
+			self.left_rotate(y)
+
 			# right rotate z...
+			'''
 			sub_root=z.parent
 			t3=x.right_child
 			x.left_child=y
@@ -114,11 +165,14 @@ class AVLTree:
 					x.parent.left_child=x
 				else:
 					x.parent.right_child=x
+			'''
+			self.right_rotate(z)
 
 		elif y==z.right_child and x==y.right_child:
 			# right right case
 			# left rotate z...
 			print "Right Right Case"
+			'''
 			sub_root=z.parent
 			t2=y.left_child
 			y.left_child=z
@@ -133,11 +187,15 @@ class AVLTree:
 					y.parent.left_child=y
 				else:
 					y.parent.right_child=y
+			'''
+			self.left_rotate(z)
 
 		elif y==z.right_child and x==y.left_child:
 			# right left case
 			# right rotate y...
 			print "Right Left Case"
+			self.right_rotate(y)
+			'''
 			t3=x.right_child
 			z.right_child==x
 			x.parent=z
@@ -145,7 +203,10 @@ class AVLTree:
 			y.parent=x
 			y.left_child=t3
 			if t3!=None: t3.parent=y
+			'''
 			# left rotate z...
+			self.left_rotate(z)
+			'''
 			sub_root=z.parent
 			t2=x.left_child
 			x.left_child=z
@@ -160,6 +221,7 @@ class AVLTree:
 					x.parent.left_child=x
 				else:
 					x.parent.right_child=x
+			'''
 
 		else:
 			raise ValueError('Path could not be identified!')
@@ -326,6 +388,14 @@ class AVLTree:
 
 a=AVLTree()
 
+a.insert(10)
+a.insert(20)
+a.insert(5)
+a.insert(3)
+a.insert(4)
+
+a.print_tree()
+
 '''
 for i in range(10):
 	a.insert(i)
@@ -333,12 +403,13 @@ for i in range(10):
 	a.print_tree()
 '''
 
+'''
 from random import randint
 for _ in range(10):
 	a.insert(randint(0,100))
 	print '-'*10
 	a.print_tree()
-
+'''
 
 '''
 # Left Left Case
