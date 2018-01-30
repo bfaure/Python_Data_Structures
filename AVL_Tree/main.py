@@ -113,81 +113,21 @@ class AVLTree:
 		if y==z.left_child and x==y.left_child:
 			# left left case
 			# right rotate z...
-			'''
 			print "Left Left Case"
-			sub_root=z.parent
-			t3=y.right_child
-			y.right_child=z
-			z.parent=y
-			z.left_child=t3
-			if t3!=None: t3.parent=z
-			y.parent=sub_root
-			if y.parent==None: 
-				self.root=y
-			else:
-				if y.parent.left_child==z:
-					y.parent.left_child=y
-				else:
-					y.parent.right_child=y
-			'''
 			self.right_rotate(z)
 
 		elif y==z.left_child and x==y.right_child:
 			# left right case
 			# left rotate y...
 			print "Left Right Case"
-			'''
-			t2=x.left_child
-			z.left_child=x
-			x.parent=z
-			x.left_child=y
-			y.parent=x
-			y.right_child=t2
-			if t2!=None: t2.parent=y
-			'''
 			self.left_rotate(y)
-
 			# right rotate z...
-			'''
-			sub_root=z.parent
-			t3=x.right_child
-			x.left_child=y
-			y.parent=x
-			x.right_child=z
-			z.parent=x
-			z.left_child=t3
-			if t3!=None: t3.parent=z
-			x.parent=sub_root
-			if x.parent==None: 
-				self.root=y
-			else:
-				if x.parent.left_child==z:
-					x.parent.left_child=x
-				else:
-					x.parent.right_child=x
-			'''
 			self.right_rotate(z)
 
 		elif y==z.right_child and x==y.right_child:
 			# right right case
 			# left rotate z...
 			print "Right Right Case"
-			'''
-			sub_root=z.parent
-			t2=y.left_child
-			y.left_child=z
-			z.parent=y
-			z.right_child=t2
-			if t2!=None: t2.parent=z
-			y.parent=sub_root
-			if y.parent==None: 
-				self.root=y
-			else:
-				if y.parent.left_child==z:
-					y.parent.left_child=y
-				else:
-					y.parent.right_child=y
-			'''
 			self.left_rotate(z)
 
 		elif y==z.right_child and x==y.left_child:
@@ -195,37 +135,33 @@ class AVLTree:
 			# right rotate y...
 			print "Right Left Case"
 			self.right_rotate(y)
-			'''
-			t3=x.right_child
-			z.right_child==x
-			x.parent=z
-			x.right_child=y
-			y.parent=x
-			y.left_child=t3
-			if t3!=None: t3.parent=y
-			'''
 			# left rotate z...
 			self.left_rotate(z)
-			'''
-			sub_root=z.parent
-			t2=x.left_child
-			x.left_child=z
-			z.parent=x
-			z.right_child=t2
-			if t2!=None: t2.parent=z
-			x.parent=sub_root
-			if x.parent==None: 
-				self.root=x
-			else:
-				if x.parent.left_child==z:
-					x.parent.left_child=x
-				else:
-					x.parent.right_child=x
-			'''
 
 		else:
-			raise ValueError('Path could not be identified!')
+			raise ValueError('Path state could not be identified!')
 
+	def print_levels(self):
+		import sys
+		print "_"*15
+		levels=[]
+		cur_nodes=[self.root]
+		while True:
+			if len(cur_nodes)==0: break
+			cur_values=[]
+			next_nodes=[]
+			for n in cur_nodes:
+				if n.value!=None:       cur_values.append(n.value)
+				if n.left_child!=None:  next_nodes.append(n.left_child)
+				if n.right_child!=None: next_nodes.append(n.right_child)
+			levels.append(cur_values)
+			cur_nodes=next_nodes
+		for i,level in enumerate(levels):
+			sys.stdout.write("Level %d:  "%i)
+			for n in level:
+				sys.stdout.write("%d "%n)
+			sys.stdout.write("\n")
+		print "_"*15
 
 	def insert(self,value):
 		if self.root==None:
@@ -395,6 +331,9 @@ a.insert(3)
 a.insert(4)
 
 a.print_tree()
+
+print '-'*10
+a.print_levels()
 
 '''
 for i in range(10):
