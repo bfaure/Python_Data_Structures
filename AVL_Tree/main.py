@@ -4,8 +4,9 @@ class node:
 		self.left_child=None
 		self.right_child=None
 		self.parent=None # pointer to parent node in tree
+		self.height=None # height of node in tree (max dist. to leaf)
 
-class binary_search_tree:
+class AVLTree:
 	def __init__(self):
 		self.root=None
 
@@ -164,3 +165,9 @@ class binary_search_tree:
 		elif value>cur_node.value and cur_node.right_child!=None:
 			return self._search(value,cur_node.right_child)
 		return False 
+
+
+a=AVLTree()
+
+
+
