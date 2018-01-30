@@ -13,28 +13,6 @@ class AVLTree:
 	def __init__(self):
 		self.root=None
 
-	'''
-	# NEW FOR AVL
-	def check_balance(self,cur_node):
-		if abs(cur_node.left_child.height-cur_node.right_child.height)>1:
-			self.rebalance(cur_node)
-		if cur_node.parent!=None:
-			self.check_balance(cur_node.parent)
-
-	# NEW FOR AVL
-	def rebalance(self,cur_node):
-		if cur_node.left_child.height-cur_node.right_child.height>1:
-			if cur_node.left_child.left_child.height>cur_node.left_child.right_child.height:
-				# right rotate cur_node
-				pass
-			else:
-				# left right rotate cur_node
-				pass
-		else:
-			if cur_node.right_child.left_child.height>cur_node.right_child.right_child.height:
-				# 
-	'''
-
 	# Recursively re-calculates the heights for nodes
 	# above cur_node, while re-calculating heights, if it
 	# comes across an instance where the AVL rules are broken it 
@@ -348,10 +326,19 @@ class AVLTree:
 
 a=AVLTree()
 
+'''
 for i in range(10):
 	a.insert(i)
 	print '-'*10
 	a.print_tree()
+'''
+
+from random import randint
+for _ in range(10):
+	a.insert(randint(0,100))
+	print '-'*10
+	a.print_tree()
+
 
 '''
 # Left Left Case
