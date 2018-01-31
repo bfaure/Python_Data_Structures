@@ -16,15 +16,15 @@ class AVLTree:
 
 	# prints out a pictorial representation of the tree
 	def __repr__(self):
-		placeholder='    ' # 4 spaces
 		content=''
 		levels=[]
 		cur_nodes=[self.root]
 		cur_height=self.root.height
+		sep=' '*(2**(cur_height-1))
 		while True:
 			cur_height+=-1
 			if len(cur_nodes)==0: break
-			cur_row=''
+			cur_row=' '
 			next_row=''
 			next_nodes=[]
 
@@ -34,33 +34,39 @@ class AVLTree:
 			for n in cur_nodes:
 
 				if n==None:
-					cur_row+='  '
-					next_row+=' '
-					next_nodes.append(None)
-					next_nodes.append(None)
+					cur_row+='   '+sep
+					next_row+='   '+sep
+					next_nodes.extend([None,None])
 					continue
 
 				if n.value!=None:       
-					cur_row+=' %s  '%str(n.value)
+					buf=' '*((5-len(str(n.value)))/2)
+					cur_row+='%s%s%s'%(buf,str(n.value),buf)+sep
 				else:
-					cur_row+='      '
+					cur_row+=' '*5
+					cur_row+=sep
 
 				if n.left_child!=None:  
 					next_nodes.append(n.left_child)
 					next_row+=' / '
+					next_row+=sep
 				else:
 					next_row+='   '
+					next_row+=sep
 					next_nodes.append(None)
 
 				if n.right_child!=None: 
 					next_nodes.append(n.right_child)
 					next_row+=' \ '
+					next_row+=sep
 				else:
 					next_row+='   '
+					next_row+=sep
 					next_nodes.append(None)
 
-			content+=(cur_height*'  '+cur_row+'\n'+cur_height*'  '+next_row+'\n')
+			content+=(cur_height*'   '+cur_row+'\n'+cur_height*'   '+next_row+'\n')
 			cur_nodes=next_nodes
+			sep=' '*(len(sep)/2)
 		return content
 
 	# Recursively re-calculates the heights for nodes
@@ -365,13 +371,7 @@ class AVLTree:
 
 
 a=AVLTree()
-a.insert(10)
-a.insert(5)
-a.insert(15)
-a.insert(2)
-a.insert(6)
-a.insert(11)
-a.insert(20)
-a.insert(1)
 
-print a
+for i in range(10):
+	a.insert(i)
+	print a 
