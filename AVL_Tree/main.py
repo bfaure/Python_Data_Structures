@@ -9,9 +9,59 @@ class node:
 	def __repr__(self):
 		return str(self.value)
 
+
 class AVLTree:
 	def __init__(self):
 		self.root=None
+
+	# prints out a pictorial representation of the tree
+	def __repr__(self):
+		placeholder='    ' # 4 spaces
+		content=''
+		levels=[]
+		cur_nodes=[self.root]
+		cur_height=self.root.height
+		while True:
+			cur_height+=-1
+			if len(cur_nodes)==0: break
+			cur_row=''
+			next_row=''
+			next_nodes=[]
+
+			if all(n is None for n in cur_nodes):
+				break
+
+			for n in cur_nodes:
+
+				if n==None:
+					cur_row+='  '
+					next_row+=' '
+					next_nodes.append(None)
+					next_nodes.append(None)
+					continue
+
+				if n.value!=None:       
+					cur_row+=' %s  '%str(n.value)
+				else:
+					cur_row+='      '
+
+				if n.left_child!=None:  
+					next_nodes.append(n.left_child)
+					next_row+=' / '
+				else:
+					next_row+='   '
+					next_nodes.append(None)
+
+				if n.right_child!=None: 
+					next_nodes.append(n.right_child)
+					next_row+=' \ '
+				else:
+					next_row+='   '
+					next_nodes.append(None)
+
+			content+=(cur_height*'  '+cur_row+'\n'+cur_height*'  '+next_row+'\n')
+			cur_nodes=next_nodes
+		return content
 
 	# Recursively re-calculates the heights for nodes
 	# above cur_node, while re-calculating heights, if it
@@ -20,24 +70,8 @@ class AVLTree:
 	def _recalculate_heights(self,cur_node,path=[]):
 		if cur_node.parent==None: return
 
-		'''
-		new_height=1+cur_node.height
-		prior_height=cur_node.parent.height
-
-		if new_height>prior_height:
-			cur_node.parent.height=new_height
-		'''
-
 		path=[cur_node]+path
-		'''
-		left_height,right_height=0,0
-		if cur_node.parent.left_child==cur_node and cur_node.parent.right_child!=None:
-			left_height=cur_node.height 
-			right_height=cur_node.parent.right_child.height
-		if cur_node.parent.right_child==cur_node and cur_node.parent.left_child!=None:
-			left_height=cur_node.parent.left_child.height
-			right_height=cur_node.height 
-		'''
+
 		left_height,right_height=0,0
 		if cur_node.parent.left_child!=None:
 			left_height=cur_node.parent.left_child.height
@@ -45,13 +79,9 @@ class AVLTree:
 			right_height=cur_node.parent.right_child.height
 
 		if abs(left_height-right_height)>1:
-			print 'AVL Broken'	
-			#print 'Path: ',path
+			#print 'AVL Broken'	
 			path=[cur_node.parent]+path
 			self._rebalance_nodes(path)
-			#print 'After rebalancing:'
-			#self.print_levels()
-			#self._recalculate_heights(path[-1])
 			return
 
 		new_height=1+cur_node.height 
@@ -121,7 +151,7 @@ class AVLTree:
 	# this function will figure out which of the 4 cases the node is in and will
 	# take action accordingly to fix the issue.
 	def _rebalance_nodes(self,path):
-		print "Rebalancing nodes: ",path
+		#print "Rebalancing nodes: ",path
 		# using rules from https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
 		z=path[0] # first unbalanced node
 		y=path[1] # child of z that comes on path from latest insert
@@ -129,30 +159,24 @@ class AVLTree:
 
 		if y==z.left_child and x==y.left_child:
 			# left left case
-			# right rotate z...
-			print "Left Left Case"
+			#print "Left Left Case"
 			self.right_rotate(z)
 
 		elif y==z.left_child and x==y.right_child:
 			# left right case
-			# left rotate y...
-			print "Left Right Case"
+			#print "Left Right Case"
 			self.left_rotate(y)
-			# right rotate z...
 			self.right_rotate(z)
 
 		elif y==z.right_child and x==y.right_child:
 			# right right case
-			# left rotate z...
-			print "Right Right Case"
+			#print "Right Right Case"
 			self.left_rotate(z)
 
 		elif y==z.right_child and x==y.left_child:
 			# right left case
-			# right rotate y...
-			print "Right Left Case"
+			#print "Right Left Case"
 			self.right_rotate(y)
-			# left rotate z...
 			self.left_rotate(z)
 
 		else:
@@ -202,6 +226,7 @@ class AVLTree:
 			else:
 				self._insert(value,cur_node.right_child)
 		else:
+			return
 			print "Value already in tree!"
 
 	def print_tree(self):
@@ -340,55 +365,13 @@ class AVLTree:
 
 
 a=AVLTree()
-
-
-'''
-for i in range(10):
-	print 'Inserting ',i
-	a.insert(i)
-	a.print_tree()
-	a.print_levels()
-'''
-
-
-from random import randint
-for _ in range(100):
-	a.insert(randint(0,100))
-	a.print_tree()
-	a.print_levels()
-
-
-'''
-# Left Left Case
 a.insert(10)
 a.insert(5)
 a.insert(15)
-a.print_tree()
-
-print '-'*10
-a.insert(4)
-a.print_tree()
-
-print '-'*10
-a.insert(3)
-a.print_tree()
-'''
-
-'''
-# Right Right Case
-a.insert(10)
-a.insert(5)
-a.insert(15)
-
-a.print_tree()
-
-print '-'*10
-
+a.insert(2)
+a.insert(6)
+a.insert(11)
 a.insert(20)
-a.print_tree()
+a.insert(1)
 
-print '-'*10
-
-a.insert(30)
-a.print_tree()
-'''
+print a
