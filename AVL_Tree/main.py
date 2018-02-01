@@ -14,15 +14,14 @@ class AVLTree:
 	def __init__(self):
 		self.root=None
 
-	# prints out a pictorial representation of the tree
+	# prints out a string pictorial representation of the tree
 	def __repr__(self):
-		content=''
-		levels=[]
-		cur_nodes=[self.root]
-		cur_height=self.root.height
-		sep=' '*(2**(cur_height-1))
+		content='' # to hold final string
+		cur_nodes=[self.root] # all nodes at current level
+		cur_height=self.root.height # height of nodes at current level
+		sep=' '*(2**(cur_height-1)) # variable sized separator between elements
 		while True:
-			cur_height+=-1
+			cur_height+=-1 # decrement current height
 			if len(cur_nodes)==0: break
 			cur_row=' '
 			next_row=''
@@ -43,30 +42,25 @@ class AVLTree:
 					buf=' '*((5-len(str(n.value)))/2)
 					cur_row+='%s%s%s'%(buf,str(n.value),buf)+sep
 				else:
-					cur_row+=' '*5
-					cur_row+=sep
+					cur_row+=' '*5+sep
 
 				if n.left_child!=None:  
 					next_nodes.append(n.left_child)
-					next_row+=' / '
-					next_row+=sep
+					next_row+=' /'+sep
 				else:
-					next_row+='   '
-					next_row+=sep
+					next_row+='  '+sep
 					next_nodes.append(None)
 
 				if n.right_child!=None: 
 					next_nodes.append(n.right_child)
-					next_row+=' \ '
-					next_row+=sep
+					next_row+='\ '+sep
 				else:
-					next_row+='   '
-					next_row+=sep
+					next_row+='  '+sep
 					next_nodes.append(None)
 
 			content+=(cur_height*'   '+cur_row+'\n'+cur_height*'   '+next_row+'\n')
 			cur_nodes=next_nodes
-			sep=' '*(len(sep)/2)
+			sep=' '*(len(sep)/2) # cut separator size in half
 		return content
 
 	# Recursively re-calculates the heights for nodes
@@ -372,6 +366,12 @@ class AVLTree:
 
 a=AVLTree()
 
-for i in range(10):
-	a.insert(i)
-	print a 
+a.insert(10)
+a.insert(15)
+a.insert(5)
+a.insert(1)
+a.insert(20)
+a.insert(11)
+a.insert(30)
+
+print a
