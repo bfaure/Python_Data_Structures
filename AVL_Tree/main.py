@@ -72,18 +72,20 @@ class AVLTree:
 
 		path=[cur_node]+path
 
+		# figure out height of other child of parent of cur_node (if one)
 		left_height,right_height=0,0
 		if cur_node.parent.left_child!=None:
 			left_height=cur_node.parent.left_child.height
 		if cur_node.parent.right_child!=None:
 			right_height=cur_node.parent.right_child.height
 
+		# calculate the balance factor
 		if abs(left_height-right_height)>1:
-			#print 'AVL Broken'	
 			path=[cur_node.parent]+path
 			self._rebalance_nodes(path)
 			return
 
+		# possibly assign new height to parent of cur_node
 		new_height=1+cur_node.height 
 		if new_height>cur_node.parent.height:
 			cur_node.parent.height=new_height
@@ -151,7 +153,6 @@ class AVLTree:
 	# this function will figure out which of the 4 cases the node is in and will
 	# take action accordingly to fix the issue.
 	def _rebalance_nodes(self,path):
-		#print "Rebalancing nodes: ",path
 		# using rules from https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
 		z=path[0] # first unbalanced node
 		y=path[1] # child of z that comes on path from latest insert
@@ -159,50 +160,24 @@ class AVLTree:
 
 		if y==z.left_child and x==y.left_child:
 			# left left case
-			#print "Left Left Case"
 			self.right_rotate(z)
 
 		elif y==z.left_child and x==y.right_child:
 			# left right case
-			#print "Left Right Case"
 			self.left_rotate(y)
 			self.right_rotate(z)
 
 		elif y==z.right_child and x==y.right_child:
 			# right right case
-			#print "Right Right Case"
 			self.left_rotate(z)
 
 		elif y==z.right_child and x==y.left_child:
 			# right left case
-			#print "Right Left Case"
 			self.right_rotate(y)
 			self.left_rotate(z)
 
 		else:
 			raise ValueError('Path state could not be identified!')
-
-	def print_levels(self):
-		import sys
-		print "_"*15
-		levels=[]
-		cur_nodes=[self.root]
-		while True:
-			if len(cur_nodes)==0: break
-			cur_values=[]
-			next_nodes=[]
-			for n in cur_nodes:
-				if n.value!=None:       cur_values.append(n.value)
-				if n.left_child!=None:  next_nodes.append(n.left_child)
-				if n.right_child!=None: next_nodes.append(n.right_child)
-			levels.append(cur_values)
-			cur_nodes=next_nodes
-		for i,level in enumerate(levels):
-			sys.stdout.write("Level %d:  "%i)
-			for n in level:
-				sys.stdout.write("%d "%n)
-			sys.stdout.write("\n")
-		print "_"*15
 
 	def insert(self,value):
 		if self.root==None:
