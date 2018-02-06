@@ -67,7 +67,7 @@ class AVLTree:
 	# above cur_node, while re-calculating heights, if it
 	# comes across an instance where the AVL rules are broken it 
 	# will call the rebalance function to fix the problem.
-	def _recalculate_heights(self,cur_node,path=[]):
+	def _AVLify_insertion(self,cur_node,path=[]):
 		if cur_node.parent==None: return
 
 		path=[cur_node]+path
@@ -90,7 +90,7 @@ class AVLTree:
 		if new_height>cur_node.parent.height:
 			cur_node.parent.height=new_height
 
-		self._recalculate_heights(cur_node.parent,path)
+		self._AVLify_insertion(cur_node.parent,path)
 
 	# Returns the height of the provided node, value is based
 	# on the max of the values of the nodes children. If node is
@@ -149,7 +149,7 @@ class AVLTree:
 			self.get_height(y.right_child))
 
 
-	# Provided an instance where AVL rules are broken from _recalculate_heights
+	# Provided an instance where AVL rules are broken from _AVLify_insertion
 	# this function will figure out which of the 4 cases the node is in and will
 	# take action accordingly to fix the issue.
 	def _rebalance_nodes(self,path):
@@ -190,14 +190,14 @@ class AVLTree:
 			if cur_node.left_child==None:
 				cur_node.left_child=node(value)
 				cur_node.left_child.parent=cur_node # set parent
-				self._recalculate_heights(cur_node.left_child)
+				self._AVLify_insertion(cur_node.left_child)
 			else:
 				self._insert(value,cur_node.left_child)
 		elif value>cur_node.value:
 			if cur_node.right_child==None:
 				cur_node.right_child=node(value)
 				cur_node.right_child.parent=cur_node # set parent
-				self._recalculate_heights(cur_node.right_child)
+				self._AVLify_insertion(cur_node.right_child)
 			else:
 				self._insert(value,cur_node.right_child)
 		else:
@@ -322,6 +322,42 @@ class AVLTree:
 			# delete the inorder successor now that it's value was
 			# copied into the other node
 			self.delete_node(successor)
+
+			# exit function so we don't call the _AVLify_deletion twice
+			return
+
+		# begin to traverse back up the tree checking if there are
+		# any sections which now invalidate the AVL balance rules
+		#self._AVLify_deletion(node_parent)
+
+	# Should only be called from delete_node, similar to _AVLify_insertion
+	# except it is not terminated once a single identified portion of the tree
+	# is fixed, in the case of deletion fixing a single unbalanced section
+	# may cause another to pop up higher in the tree.
+	def _AVLify_deletion(self,cur_node,path=[]):
+		if cur_node.parent==None: return
+
+		path=[cur_node]+path
+
+		# figure out height of other child of parent of cur_node (if one)
+		left_height,right_height=0,0
+		if cur_node.parent.left_child!=None:
+			left_height=cur_node.parent.left_child.height
+		if cur_node.parent.right_child!=None:
+			right_height=cur_node.parent.right_child.height
+
+		# calculate the balance factor
+		if abs(left_height-right_height)>1:
+			path=[cur_node.parent]+path
+			self._rebalance_nodes(path)
+			return
+
+		# possibly assign new height to parent of cur_node
+		new_height=1+cur_node.height 
+		if new_height>cur_node.parent.height:
+			cur_node.parent.height=new_height
+
+		self._AVLify_insertion(cur_node.parent,path)
 
 	def search(self,value):
 		if self.root!=None:
