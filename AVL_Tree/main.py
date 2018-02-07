@@ -16,6 +16,7 @@ class AVLTree:
 
 	# prints out a string pictorial representation of the tree
 	def __repr__(self):
+		if self.root==None: return ''
 		content='' # to hold final string
 		cur_nodes=[self.root] # all nodes at current level
 		cur_height=self.root.height # height of nodes at current level
@@ -450,7 +451,7 @@ class AVLTree:
 			return self._search(value,cur_node.right_child)
 		return False 
 
-
+'''
 a=AVLTree()
 
 a.insert(10)
@@ -470,6 +471,17 @@ a.delete_value(20)
 print a
 a.delete_value(15)
 print a
+'''
 
+def test(n=50):
+	a=AVLTree()
+	for i in range(n):
+		a.insert(i)
+	print a
+	for i in range(n):
+		a.delete_value(i)
+	print a
+
+test()
 
 
