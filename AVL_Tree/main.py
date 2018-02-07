@@ -17,7 +17,7 @@ class AVLTree:
 	# prints out a string pictorial representation of the tree
 	def __repr__(self):
 		if self.root==None: return ''
-		content='' # to hold final string
+		content='\n' # to hold final string
 		cur_nodes=[self.root] # all nodes at current level
 		cur_height=self.root.height # height of nodes at current level
 		sep=' '*(2**(cur_height-1)) # variable sized separator between elements
@@ -329,7 +329,9 @@ class AVLTree:
 
 		if node_parent!=None:
 			# fix the height of the parent of current node
-			node_parent.height+=-1
+			#node_parent.height+=-1
+			#node_parent.height=self._height(node_parent,0)
+			node_parent.height=1+max(self.get_height(node_parent.left_child),self.get_height(node_parent.right_child))
 
 			# begin to traverse back up the tree checking if there are
 			# any sections which now invalidate the AVL balance rules
@@ -513,18 +515,26 @@ a.delete_value(15)
 print a
 '''
 
-def test(n=5):
+def test(n=10):
 	a=AVLTree()
 	for i in range(n):
 		a.insert(i)
+
+	print "Full tree..."
 	print a
 
+	print "Validating heights..."
 	a.validate_heights()
+	print "Validation complete!"
 
 	for i in range(n):
 		print "deleting ",i
 		a.delete_value(i)
 		print a
+		print "Validating heights..."
+		a.validate_heights()
+		print "Validation complete!"
+
 	print a 
 
 	print "Validating heights..."
