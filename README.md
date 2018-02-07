@@ -11,6 +11,6 @@ The BST validator is a function whose purpose is to check whether the input BST 
 The most popular data structure, the binary search tree is an intuitive way of storing sortable data that provides faster-than-linear search capabilities. Values in a BST are wrapped in a 'node' class used to link the tree together. Given a certain node 'n' with value 'v', all nodes to the right of 'n' contain values larger than 'v', and all nodes to the left contain values smaller than 'v'.
 
 ## [Linked_List](https://www.youtube.com/watch?v=JlMyYuY1aXU)
-The linked list is a useful data structure providing similar functionality to an array, but in a dynamic package. Albeit, not as useful in Python as in statically typed languages, the linked list is still an interesting project to undertake. 
+The linked list is a useful data structure providing similar functionality to an array, but in a dynamic package. Albeit, not as useful in Python as in statically typed languages, the linked list is still an interesting project to undertake. Similar to BST, values in a linked list are wrapped in an instance of a 'node' class containing a pointer, allowing the whole list to be linked together by distributed references.
 
 
