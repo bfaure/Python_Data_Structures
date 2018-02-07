@@ -333,14 +333,30 @@ class AVLTree:
 		# any sections which now invalidate the AVL balance rules
 		self._inspect_deletion(node_parent)
 
+	# Provided a node in the tree, returns either the left or
+	# right child, depending on which has the higher height value.
+	def taller_child(self,cur_node):
+		if cur_node.left_child!=None:
+			left_height=cur_node.left_child.height
+		else:
+			return cur_node.right_child
+		if cur_node.right_child!=None:
+			right_height=cur_node.right_child.height
+		else:
+			return cur_node.left_child
+		return cur_node.left_child if left_height>=right_height else cur_node.right_child
+
 	# Provided an instance where AVL rules are broken from _inspect_deletion
 	# this function will figure out which of the 4 cases the node is in and will
 	# take action accordingly to fix the issue.
 	def _rebalance_deletion(self,cur_node):
 		# using rules from https://www.geeksforgeeks.org/avl-tree-set-2-deletion/
-		z=path[0] # first unbalanced node
-		y=path[1] # child of z that comes on path from latest insert
-		x=path[2] # grandchild of z that comes on path from latest insert
+		z=cur_node # first unbalanced node
+		y=self.taller_child(z) # larger-height child of z
+		x=self.taller_child(y) # larger-height child of y
+
+		print "_rebalance_deletion: z=",z,"y=",y,"x=",x
+		#return
 
 		if y==z.left_child and x==y.left_child:
 			# left left case
@@ -361,7 +377,7 @@ class AVLTree:
 			self.left_rotate(z)
 
 		else:
-			raise ValueError('Path state could not be identified!')
+			raise ValueError('Node configuration could not be identified!')
 
 	# Should only be called from delete_node, similar to _inspect_insertion
 	# except it is not terminated once a single identified portion of the tree
@@ -373,6 +389,9 @@ class AVLTree:
 
 		#cur_height=self._height(cur_node,0)
 		cur_height=cur_node.height
+
+		if cur_height!=self._height(cur_node,0):
+			raise ValueError("cur_height did not equal calculated height!")
 
 		# figure out height of other child of parent of cur_node (if one)
 		left_height,right_height=0,0
@@ -391,13 +410,15 @@ class AVLTree:
 		# calculate the balance factor
 		if abs(left_height-right_height)>1:
 			print 'Need to rebalance deletion!'
-			#self._rebalance_deletion(cur_node.parent)
-			return
+			self._rebalance_deletion(cur_node.parent)
+			#return
 
+		'''
 		# possibly assign new height to parent of cur_node
 		new_height=1+cur_node.height 
 		if new_height>cur_node.parent.height:
 			cur_node.parent.height=new_height
+		'''
 
 		self._inspect_deletion(cur_node.parent)
 
