@@ -385,14 +385,19 @@ class AVLTree:
 	# may cause another to pop up higher in the tree.
 	def _inspect_deletion(self,cur_node):
 		print "_inspect_deletion called on node: ",cur_node
-		if cur_node.parent==None: return
+		
+		#if cur_node.parent==None: return
+		if cur_node==None: return
 
 		#cur_height=self._height(cur_node,0)
-		cur_height=cur_node.height
+		#cur_height=cur_node.height
 
-		if cur_height!=self._height(cur_node,0):
-			raise ValueError("cur_height did not equal calculated height!")
+		#if cur_height!=self._height(cur_node,0):
+		#	raise ValueError("cur_height did not equal calculated height!")
 
+		cur_height=self._height(cur_node,0)
+
+		'''
 		# figure out height of other child of parent of cur_node (if one)
 		left_height,right_height=0,0
 		if cur_node.parent.left_child!=None:
@@ -404,13 +409,21 @@ class AVLTree:
 			left_height=cur_height
 		else:
 			right_height=cur_height
+		'''
+
+		left_height,right_height=0,0
+		if cur_node.left_child!=None:
+			left_height=cur_node.left_child.height
+		if cur_node.right_child!=None:
+			right_height=cur_node.right_child.height
 
 		print "left_height: %d, right_height: %d"%(left_height,right_height)
 
 		# calculate the balance factor
 		if abs(left_height-right_height)>1:
 			print 'Need to rebalance deletion!'
-			self._rebalance_deletion(cur_node.parent)
+			#self._rebalance_deletion(cur_node.parent)
+			self._rebalance_deletion(cur_node)
 			#return
 
 		'''
@@ -449,7 +462,14 @@ a.insert(11)
 a.insert(30)
 
 print a 
-
 a.delete_value(1)
-
 print a
+a.delete_value(30)
+print a
+a.delete_value(20)
+print a
+a.delete_value(15)
+print a
+
+
+
