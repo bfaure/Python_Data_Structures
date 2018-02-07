@@ -253,6 +253,7 @@ class AVLTree:
 		if node==None or self.find(node.value)==None:
 			print "Node to be deleted not found in the tree!"
 			return None 
+		## -----
 
 		# returns the node with min value in tree rooted at input node
 		def min_value_node(n):
@@ -366,39 +367,47 @@ class AVLTree:
 			# left left case
 			self.right_rotate(z)
 
+			'''
 			# fix node heights
 			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
 			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
 			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
+			'''
 
 		elif y==z.left_child and x==y.right_child:
 			# left right case
 			self.left_rotate(y)
 			self.right_rotate(z)
 
+			'''
 			# fix node heights
 			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
 			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
 			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
+			'''
 
 		elif y==z.right_child and x==y.right_child:
 			# right right case
 			self.left_rotate(z)
 
+			'''
 			# fix node heights
 			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
 			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
 			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
+			'''
 
 		elif y==z.right_child and x==y.left_child:
 			# right left case
 			self.right_rotate(y)
 			self.left_rotate(z)
 
+			'''
 			# fix node heights
 			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
 			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
 			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
+			'''
 
 		else:
 			raise ValueError('Node configuration could not be identified!')
@@ -408,39 +417,9 @@ class AVLTree:
 	# is fixed, in the case of deletion fixing a single unbalanced section
 	# may cause another to pop up higher in the tree.
 	def _inspect_deletion(self,cur_node):
-		#print "_inspect_deletion called on node: ",cur_node
-		
-		#if cur_node.parent==None: return
 		if cur_node==None: return
 
-		#cur_height=self._height(cur_node,0)
 		#cur_height=cur_node.height
-
-		#if cur_height!=self._height(cur_node,0):
-		#	raise ValueError("cur_height did not equal calculated height!")
-
-		'''
-		if cur_node.height+1!=self._height(cur_node,0):
-			print "Node ",cur_node,"stored height:",cur_node.height,"true:",self._height(cur_node,0)
-			raise ValueError("Stored node height not correct!")
-		'''
-
-		#cur_height=self._height(cur_node,0)
-		cur_height=cur_node.height
-
-		'''
-		# figure out height of other child of parent of cur_node (if one)
-		left_height,right_height=0,0
-		if cur_node.parent.left_child!=None:
-			left_height=cur_node.parent.left_child.height
-		if cur_node.parent.right_child!=None:
-			right_height=cur_node.parent.right_child.height
-
-		if cur_node==cur_node.parent.left_child:
-			left_height=cur_height
-		else:
-			right_height=cur_height
-		'''
 
 		left_height,right_height=0,0
 		if cur_node.left_child!=None:
@@ -453,16 +432,7 @@ class AVLTree:
 		# calculate the balance factor
 		if abs(left_height-right_height)>1:
 			print 'Need to rebalance deletion!'
-			#self._rebalance_deletion(cur_node.parent)
 			self._rebalance_deletion(cur_node)
-			#return
-
-		'''
-		# possibly assign new height to parent of cur_node
-		new_height=1+cur_node.height 
-		if new_height>cur_node.parent.height:
-			cur_node.parent.height=new_height
-		'''
 
 		self._inspect_deletion(cur_node.parent)
 
@@ -473,6 +443,7 @@ class AVLTree:
 
 		if cur_node.height!=self._height(cur_node,0):
 			print "Node ",cur_node,"reported height:",cur_node.height,"true:",self._height(cur_node,0)
+			raise ValueError("VALIDATION ERROR!")
 
 		if cur_node.left_child!=None:
 			self.validate_heights(cur_node.left_child)
@@ -494,29 +465,8 @@ class AVLTree:
 			return self._search(value,cur_node.right_child)
 		return False 
 
-'''
-a=AVLTree()
 
-a.insert(10)
-a.insert(15)
-a.insert(5)
-a.insert(1)
-a.insert(20)
-a.insert(11)
-a.insert(30)
-
-print a 
-a.delete_value(1)
-print a
-a.delete_value(30)
-print a
-a.delete_value(20)
-print a
-a.delete_value(15)
-print a
-'''
-
-def test(n=20):
+def test(n=10):
 	a=AVLTree()
 	for i in range(n):
 		a.insert(i)
@@ -542,6 +492,6 @@ def test(n=20):
 	a.validate_heights()
 	print "Validation complete!"
 
-#test()
+test()
 
 
