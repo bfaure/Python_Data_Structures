@@ -326,6 +326,9 @@ class AVLTree:
 			# exit function so we don't call the _inspect_deletion twice
 			return
 
+		# fix the height of the parent of current node
+		node_parent.height+=-1
+
 		# begin to traverse back up the tree checking if there are
 		# any sections which now invalidate the AVL balance rules
 		self._inspect_deletion(node_parent)
@@ -368,7 +371,8 @@ class AVLTree:
 		print "_inspect_deletion called on node: ",cur_node
 		if cur_node.parent==None: return
 
-		cur_height=self._height(cur_node,0)
+		#cur_height=self._height(cur_node,0)
+		cur_height=cur_node.height
 
 		# figure out height of other child of parent of cur_node (if one)
 		left_height,right_height=0,0
