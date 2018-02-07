@@ -254,12 +254,6 @@ class AVLTree:
 			print "Node to be deleted not found in the tree!"
 			return None 
 
-		# If the node to be deleted is the root node
-		if node.parent==None:
-			self.root=None 
-			return None 
-		## -----
-
 		# returns the node with min value in tree rooted at input node
 		def min_value_node(n):
 			current=n
@@ -286,11 +280,14 @@ class AVLTree:
 		# CASE 1 (node has no children)
 		if node_children==0:
 
-			# remove reference to the node from the parent
-			if node_parent.left_child==node:
-				node_parent.left_child=None
+			if node_parent!=None:
+				# remove reference to the node from the parent
+				if node_parent.left_child==node:
+					node_parent.left_child=None
+				else:
+					node_parent.right_child=None
 			else:
-				node_parent.right_child=None
+				self.root=None
 
 		# CASE 2 (node has a single child)
 		if node_children==1:
@@ -301,11 +298,14 @@ class AVLTree:
 			else:
 				child=node.right_child
 
-			# replace the node to be deleted with its child
-			if node_parent.left_child==node:
-				node_parent.left_child=child
+			if node_parent!=None:
+				# replace the node to be deleted with its child
+				if node_parent.left_child==node:
+					node_parent.left_child=child
+				else:
+					node_parent.right_child=child
 			else:
-				node_parent.right_child=child
+				self.root=child
 
 			# correct the parent pointer in node
 			child.parent=node_parent
@@ -327,12 +327,13 @@ class AVLTree:
 			# exit function so we don't call the _inspect_deletion twice
 			return
 
-		# fix the height of the parent of current node
-		node_parent.height+=-1
+		if node_parent!=None:
+			# fix the height of the parent of current node
+			node_parent.height+=-1
 
-		# begin to traverse back up the tree checking if there are
-		# any sections which now invalidate the AVL balance rules
-		self._inspect_deletion(node_parent)
+			# begin to traverse back up the tree checking if there are
+			# any sections which now invalidate the AVL balance rules
+			self._inspect_deletion(node_parent)
 
 	# Provided a node in the tree, returns either the left or
 	# right child, depending on which has the higher height value.
@@ -356,26 +357,46 @@ class AVLTree:
 		y=self.taller_child(z) # larger-height child of z
 		x=self.taller_child(y) # larger-height child of y
 
-		print "_rebalance_deletion: z=",z,"y=",y,"x=",x
+		#print "_rebalance_deletion: z=",z,"y=",y,"x=",x
 		#return
 
 		if y==z.left_child and x==y.left_child:
 			# left left case
 			self.right_rotate(z)
 
+			# fix node heights
+			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
+			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
+			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
+
 		elif y==z.left_child and x==y.right_child:
 			# left right case
 			self.left_rotate(y)
 			self.right_rotate(z)
 
+			# fix node heights
+			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
+			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
+			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
+
 		elif y==z.right_child and x==y.right_child:
 			# right right case
 			self.left_rotate(z)
+
+			# fix node heights
+			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
+			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
+			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
 
 		elif y==z.right_child and x==y.left_child:
 			# right left case
 			self.right_rotate(y)
 			self.left_rotate(z)
+
+			# fix node heights
+			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
+			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
+			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
 
 		else:
 			raise ValueError('Node configuration could not be identified!')
@@ -385,7 +406,7 @@ class AVLTree:
 	# is fixed, in the case of deletion fixing a single unbalanced section
 	# may cause another to pop up higher in the tree.
 	def _inspect_deletion(self,cur_node):
-		print "_inspect_deletion called on node: ",cur_node
+		#print "_inspect_deletion called on node: ",cur_node
 		
 		#if cur_node.parent==None: return
 		if cur_node==None: return
@@ -395,6 +416,12 @@ class AVLTree:
 
 		#if cur_height!=self._height(cur_node,0):
 		#	raise ValueError("cur_height did not equal calculated height!")
+
+		'''
+		if cur_node.height+1!=self._height(cur_node,0):
+			print "Node ",cur_node,"stored height:",cur_node.height,"true:",self._height(cur_node,0)
+			raise ValueError("Stored node height not correct!")
+		'''
 
 		cur_height=self._height(cur_node,0)
 
@@ -418,7 +445,7 @@ class AVLTree:
 		if cur_node.right_child!=None:
 			right_height=cur_node.right_child.height
 
-		print "left_height: %d, right_height: %d"%(left_height,right_height)
+		#print "left_height: %d, right_height: %d"%(left_height,right_height)
 
 		# calculate the balance factor
 		if abs(left_height-right_height)>1:
@@ -486,7 +513,7 @@ a.delete_value(15)
 print a
 '''
 
-def test(n=50):
+def test(n=5):
 	a=AVLTree()
 	for i in range(n):
 		a.insert(i)
@@ -494,11 +521,15 @@ def test(n=50):
 
 	a.validate_heights()
 
-	for i in range(10):
+	for i in range(n):
+		print "deleting ",i
 		a.delete_value(i)
+		print a
 	print a 
 
+	print "Validating heights..."
 	a.validate_heights()
+	print "Validation complete!"
 
 test()
 
