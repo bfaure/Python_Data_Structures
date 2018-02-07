@@ -425,7 +425,8 @@ class AVLTree:
 			raise ValueError("Stored node height not correct!")
 		'''
 
-		cur_height=self._height(cur_node,0)
+		#cur_height=self._height(cur_node,0)
+		cur_height=cur_node.height
 
 		'''
 		# figure out height of other child of parent of cur_node (if one)
@@ -515,7 +516,7 @@ a.delete_value(15)
 print a
 '''
 
-def test(n=10):
+def test(n=20):
 	a=AVLTree()
 	for i in range(n):
 		a.insert(i)
@@ -541,6 +542,6 @@ def test(n=10):
 	a.validate_heights()
 	print "Validation complete!"
 
-test()
+#test()
 
 
