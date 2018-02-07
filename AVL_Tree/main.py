@@ -436,6 +436,19 @@ class AVLTree:
 
 		self._inspect_deletion(cur_node.parent)
 
+	def validate_heights(self,cur_node=None):
+		if cur_node==None:
+			cur_node=self.root 
+			if cur_node==None: return
+
+		if cur_node.height!=self._height(cur_node,0):
+			print "Node ",cur_node,"reported height:",cur_node.height,"true:",self._height(cur_node,0)
+
+		if cur_node.left_child!=None:
+			self.validate_heights(cur_node.left_child)
+		if cur_node.right_child!=None:
+			self.validate_heights(cur_node.right_child)
+
 	def search(self,value):
 		if self.root!=None:
 			return self._search(value,self.root)
@@ -478,9 +491,14 @@ def test(n=50):
 	for i in range(n):
 		a.insert(i)
 	print a
-	for i in range(n):
+
+	a.validate_heights()
+
+	for i in range(10):
 		a.delete_value(i)
-	print a
+	print a 
+
+	a.validate_heights()
 
 test()
 
