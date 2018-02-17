@@ -14,7 +14,6 @@ class AVLTree:
 	def __init__(self):
 		self.root=None
 
-	# prints out a string pictorial representation of the tree
 	def __repr__(self):
 		if self.root==None: return ''
 		content='\n' # to hold final string
@@ -63,122 +62,6 @@ class AVLTree:
 			cur_nodes=next_nodes
 			sep=' '*(len(sep)/2) # cut separator size in half
 		return content
-
-	# Recursively re-calculates the heights for nodes
-	# above cur_node, while re-calculating heights, if it
-	# comes across an instance where the AVL rules are broken it 
-	# will call the rebalance function to fix the problem.
-	def _inspect_insertion(self,cur_node,path=[]):
-		if cur_node.parent==None: return
-
-		path=[cur_node]+path
-
-		# figure out height of other child of parent of cur_node (if one)
-		left_height,right_height=0,0
-		if cur_node.parent.left_child!=None:
-			left_height=cur_node.parent.left_child.height
-		if cur_node.parent.right_child!=None:
-			right_height=cur_node.parent.right_child.height
-
-		# calculate the balance factor
-		if abs(left_height-right_height)>1:
-			path=[cur_node.parent]+path
-			self._rebalance_insertion(path)
-			return
-
-		# possibly assign new height to parent of cur_node
-		new_height=1+cur_node.height 
-		if new_height>cur_node.parent.height:
-			cur_node.parent.height=new_height
-
-		self._inspect_insertion(cur_node.parent,path)
-
-	# Returns the height of the provided node, value is based
-	# on the max of the values of the nodes children. If node is
-	# None, value will be 0.
-	def get_height(self,cur_node):
-		if cur_node==None:
-			return 0
-		return cur_node.height
-
-	def right_rotate(self,z):
-		sub_root=z.parent # save parent of input
-		# perform rotation
-		y=z.left_child
-		t3=y.right_child
-		y.right_child=z
-		z.parent=y
-		z.left_child=t3
-		if t3!=None: t3.parent=z
-		# Re-connect original parent of input
-		y.parent=sub_root
-		if y.parent==None:
-				self.root=y
-		else:
-			if y.parent.left_child==z:
-				y.parent.left_child=y
-			else:
-				y.parent.right_child=y		
-		# Update heights
-		z.height=1+max(self.get_height(z.left_child),
-			self.get_height(z.right_child))
-		y.height=1+max(self.get_height(y.left_child),
-			self.get_height(y.right_child))
-
-	def left_rotate(self,z):
-		sub_root=z.parent # save parent of input
-		# perform rotation
-		y=z.right_child
-		t2=y.left_child
-		y.left_child=z
-		z.parent=y
-		z.right_child=t2
-		if t2!=None: t2.parent=z
-		# Re-connect original parent of input
-		y.parent=sub_root
-		if y.parent==None: 
-			self.root=y
-		else:
-			if y.parent.left_child==z:
-				y.parent.left_child=y
-			else:
-				y.parent.right_child=y
-		# Update heights
-		z.height=1+max(self.get_height(z.left_child),
-			self.get_height(z.right_child))
-		y.height=1+max(self.get_height(y.left_child),
-			self.get_height(y.right_child))
-
-
-	# Provided an instance where AVL rules are broken from _inspect_insertion
-	# this function will figure out which of the 4 cases the node is in and will
-	# take action accordingly to fix the issue.
-	def _rebalance_insertion(self,path):
-		# using rules from https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
-		z=path[0] # first unbalanced node
-		y=path[1] # child of z that comes on path from latest insert
-		x=path[2] # grandchild of z that comes on path from latest insert
-
-		if y==z.left_child and x==y.left_child:
-			# left left case
-			self.right_rotate(z)
-
-		elif y==z.left_child and x==y.right_child:
-			# left right case
-			self.left_rotate(y)
-			self.right_rotate(z)
-
-		elif y==z.right_child and x==y.right_child:
-			# right right case
-			self.left_rotate(z)
-
-		elif y==z.right_child and x==y.left_child:
-			# right left case
-			self.right_rotate(y)
-			self.left_rotate(z)
-
-		else:
-			raise ValueError('Path state could not be identified!')
 
 	def insert(self,value):
 		if self.root==None:
@@ -330,13 +213,142 @@ class AVLTree:
 
 		if node_parent!=None:
 			# fix the height of the parent of current node
-			#node_parent.height+=-1
-			#node_parent.height=self._height(node_parent,0)
 			node_parent.height=1+max(self.get_height(node_parent.left_child),self.get_height(node_parent.right_child))
 
 			# begin to traverse back up the tree checking if there are
 			# any sections which now invalidate the AVL balance rules
 			self._inspect_deletion(node_parent)
+
+	def search(self,value):
+		if self.root!=None:
+			return self._search(value,self.root)
+		else:
+			return False
+
+	def _search(self,value,cur_node):
+		if value==cur_node.value:
+			return True
+		elif value<cur_node.value and cur_node.left_child!=None:
+			return self._search(value,cur_node.left_child)
+		elif value>cur_node.value and cur_node.right_child!=None:
+			return self._search(value,cur_node.right_child)
+		return False 
+
+
+	# Functions added for AVL...
+
+	# Recursively re-calculates the heights for nodes
+	# above cur_node, while re-calculating heights, if it
+	# comes across an instance where the AVL rules are broken it 
+	# will call the rebalance function to fix the problem.
+	def _inspect_insertion(self,cur_node,path=[]):
+		if cur_node.parent==None: return
+
+		path=[cur_node]+path
+
+		# figure out height of other child of parent of cur_node (if one)
+		left_height,right_height=0,0
+		if cur_node.parent.left_child!=None:
+			left_height=cur_node.parent.left_child.height
+		if cur_node.parent.right_child!=None:
+			right_height=cur_node.parent.right_child.height
+
+		# calculate the balance factor
+		if abs(left_height-right_height)>1:
+			path=[cur_node.parent]+path
+			self._rebalance_insertion(path)
+			return
+
+		# possibly assign new height to parent of cur_node
+		new_height=1+cur_node.height 
+		if new_height>cur_node.parent.height:
+			cur_node.parent.height=new_height
+
+		self._inspect_insertion(cur_node.parent,path)
+
+	# Returns the height of the provided node, value is based
+	# on the max of the values of the nodes children. If node is
+	# None, value will be 0.
+	def get_height(self,cur_node):
+		if cur_node==None: return 0
+		return cur_node.height
+
+	# Performs right rotation operation on provided node.
+	def right_rotate(self,z):
+		sub_root=z.parent # save parent of input
+		# perform rotation
+		y=z.left_child
+		t3=y.right_child
+		y.right_child=z
+		z.parent=y
+		z.left_child=t3
+		if t3!=None: t3.parent=z
+		# Re-connect original parent of input
+		y.parent=sub_root
+		if y.parent==None:
+				self.root=y
+		else:
+			if y.parent.left_child==z:
+				y.parent.left_child=y
+			else:
+				y.parent.right_child=y		
+		# Update heights
+		z.height=1+max(self.get_height(z.left_child),
+			self.get_height(z.right_child))
+		y.height=1+max(self.get_height(y.left_child),
+			self.get_height(y.right_child))
+
+	# Performs left rotation operation on provided node.
+	def left_rotate(self,z):
+		sub_root=z.parent # save parent of input
+		# perform rotation
+		y=z.right_child
+		t2=y.left_child
+		y.left_child=z
+		z.parent=y
+		z.right_child=t2
+		if t2!=None: t2.parent=z
+		# Re-connect original parent of input
+		y.parent=sub_root
+		if y.parent==None: 
+			self.root=y
+		else:
+			if y.parent.left_child==z:
+				y.parent.left_child=y
+			else:
+				y.parent.right_child=y
+		# Update heights
+		z.height=1+max(self.get_height(z.left_child),
+			self.get_height(z.right_child))
+		y.height=1+max(self.get_height(y.left_child),
+			self.get_height(y.right_child))
+
+
+	# Provided an instance where AVL rules are broken from _inspect_insertion
+	# this function will figure out which of the 4 cases the node is in and will
+	# take action accordingly to fix the issue.
+	def _rebalance_insertion(self,path):
+		z=path[0] # first unbalanced node
+		y=path[1] # child of z that comes on path from latest insert
+		x=path[2] # grandchild of z that comes on path from latest insert
+
+		if y==z.left_child and x==y.left_child:
+			self.right_rotate(z)
+
+		elif y==z.left_child and x==y.right_child:
+			self.left_rotate(y)
+			self.right_rotate(z)
+
+		elif y==z.right_child and x==y.right_child:
+			self.left_rotate(z)
+
+		elif y==z.right_child and x==y.left_child:
+			self.right_rotate(y)
+			self.left_rotate(z)
+
+		else:
+			raise ValueError('Path state could not be identified!')
+
 
 	# Provided a node in the tree, returns either the left or
 	# right child, depending on which has the higher height value.
@@ -355,59 +367,23 @@ class AVLTree:
 	# this function will figure out which of the 4 cases the node is in and will
 	# take action accordingly to fix the issue.
 	def _rebalance_deletion(self,cur_node):
-		# using rules from https://www.geeksforgeeks.org/avl-tree-set-2-deletion/
 		z=cur_node # first unbalanced node
 		y=self.taller_child(z) # larger-height child of z
 		x=self.taller_child(y) # larger-height child of y
 
-		#print "_rebalance_deletion: z=",z,"y=",y,"x=",x
-		#return
-
 		if y==z.left_child and x==y.left_child:
-			# left left case
 			self.right_rotate(z)
 
-			'''
-			# fix node heights
-			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
-			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
-			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
-			'''
-
 		elif y==z.left_child and x==y.right_child:
-			# left right case
 			self.left_rotate(y)
 			self.right_rotate(z)
 
-			'''
-			# fix node heights
-			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
-			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
-			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
-			'''
-
 		elif y==z.right_child and x==y.right_child:
-			# right right case
 			self.left_rotate(z)
-
-			'''
-			# fix node heights
-			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
-			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
-			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
-			'''
 
 		elif y==z.right_child and x==y.left_child:
-			# right left case
 			self.right_rotate(y)
 			self.left_rotate(z)
-
-			'''
-			# fix node heights
-			z.height=1+max(self.get_height(z.left_child),self.get_height(z.right_child))
-			y.height=1+max(self.get_height(y.left_child),self.get_height(y.right_child))
-			x.height=1+max(self.get_height(x.left_child),self.get_height(x.right_child))
-			'''
 
 		else:
 			raise ValueError('Node configuration could not be identified!')
@@ -419,15 +395,11 @@ class AVLTree:
 	def _inspect_deletion(self,cur_node):
 		if cur_node==None: return
 
-		#cur_height=cur_node.height
-
 		left_height,right_height=0,0
 		if cur_node.left_child!=None:
 			left_height=cur_node.left_child.height
 		if cur_node.right_child!=None:
 			right_height=cur_node.right_child.height
-
-		#print "left_height: %d, right_height: %d"%(left_height,right_height)
 
 		# calculate the balance factor
 		if abs(left_height-right_height)>1:
@@ -436,6 +408,9 @@ class AVLTree:
 
 		self._inspect_deletion(cur_node.parent)
 
+	# Validates the height of every node in the tree by comparing its 
+	# stored 'height' value (inside the node instance) to the return value
+	# of the self._height function which accurately calculates the height.
 	def validate_heights(self,cur_node=None):
 		if cur_node==None:
 			cur_node=self.root 
@@ -450,20 +425,6 @@ class AVLTree:
 		if cur_node.right_child!=None:
 			self.validate_heights(cur_node.right_child)
 
-	def search(self,value):
-		if self.root!=None:
-			return self._search(value,self.root)
-		else:
-			return False
-
-	def _search(self,value,cur_node):
-		if value==cur_node.value:
-			return True
-		elif value<cur_node.value and cur_node.left_child!=None:
-			return self._search(value,cur_node.left_child)
-		elif value>cur_node.value and cur_node.right_child!=None:
-			return self._search(value,cur_node.right_child)
-		return False 
 
 
 def test(n=10):
