@@ -253,7 +253,7 @@ class AVLTree:
 	def _inspect_deletion(self,cur_node):
 		if cur_node==None: return
 
-		left_height=self.get_height(cur_node.left_child)
+		left_height =self.get_height(cur_node.left_child)
 		right_height=self.get_height(cur_node.right_child)
 
 		if abs(left_height-right_height)>1:
@@ -262,7 +262,6 @@ class AVLTree:
 			self._rebalance_node(cur_node,y,x)
 
 		self._inspect_deletion(cur_node.parent)
-
 
 	def _rebalance_node(self,z,y,x):
 		if y==z.left_child and x==y.left_child:
@@ -326,13 +325,7 @@ class AVLTree:
 		return cur_node.height
 
 	def taller_child(self,cur_node):
-		if cur_node.left_child!=None: 
-			left_height=cur_node.left_child.height
-		else: 
-			return cur_node.right_child
-		if cur_node.right_child!=None:
-			right_height=cur_node.right_child.height
-		else:
-			return cur_node.left_child
-		return cur_node.left_child if left_height>=right_height else cur_node.right_child
+		left=self.get_height(cur_node.left_child)
+		right=self.get_height(cur_node.right_child)
+		return cur_node.left_child if left>=right else cur_node.right_child
 
