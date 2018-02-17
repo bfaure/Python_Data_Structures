@@ -81,7 +81,6 @@ class AVLTree:
 			else:
 				self._insert(value,cur_node.right_child)
 		else:
-			return
 			print "Value already in tree!"
 
 	def print_tree(self):
@@ -276,23 +275,19 @@ class AVLTree:
 
 	def _rebalance_node(self,z,y,x):
 		if y==z.left_child and x==y.left_child:
-			self.right_rotate(z)
+			self._right_rotate(z)
 		elif y==z.left_child and x==y.right_child:
-			self.left_rotate(y)
-			self.right_rotate(z)
+			self._left_rotate(y)
+			self._right_rotate(z)
 		elif y==z.right_child and x==y.right_child:
-			self.left_rotate(z)
+			self._left_rotate(z)
 		elif y==z.right_child and x==y.left_child:
-			self.right_rotate(y)
-			self.left_rotate(z)
+			self._right_rotate(y)
+			self._left_rotate(z)
 		else:
 			raise ValueError('_rebalance_node: z,y,x node configuration not recognized!')
 
-	def get_height(self,cur_node):
-		if cur_node==None: return 0
-		return cur_node.height
-
-	def right_rotate(self,z):
+	def _right_rotate(self,z):
 		sub_root=z.parent # save parent of input
 		# perform rotation
 		y=z.left_child
@@ -316,7 +311,7 @@ class AVLTree:
 		y.height=1+max(self.get_height(y.left_child),
 			self.get_height(y.right_child))
 
-	def left_rotate(self,z):
+	def _left_rotate(self,z):
 		sub_root=z.parent # save parent of input
 		# perform rotation
 		y=z.right_child
@@ -339,6 +334,10 @@ class AVLTree:
 			self.get_height(z.right_child))
 		y.height=1+max(self.get_height(y.left_child),
 			self.get_height(y.right_child))
+
+	def get_height(self,cur_node):
+		if cur_node==None: return 0
+		return cur_node.height
 
 	def taller_child(self,cur_node):
 		if cur_node.left_child!=None: 
