@@ -234,17 +234,11 @@ class AVLTree:
 
 	def _inspect_insertion(self,cur_node,path=[]):
 		if cur_node.parent==None: return
-
 		path=[cur_node]+path
 
-		# figure out height of other child of parent of cur_node (if one)
-		left_height,right_height=0,0
-		if cur_node.parent.left_child!=None:
-			left_height=cur_node.parent.left_child.height
-		if cur_node.parent.right_child!=None:
-			right_height=cur_node.parent.right_child.height
+		left_height =self.get_height(cur_node.parent.left_child)
+		right_height=self.get_height(cur_node.parent.right_child)
 
-		# calculate the balance factor
 		if abs(left_height-right_height)>1:
 			path=[cur_node.parent]+path
 			self._rebalance_node(path[0],path[1],path[2])
@@ -259,11 +253,8 @@ class AVLTree:
 	def _inspect_deletion(self,cur_node):
 		if cur_node==None: return
 
-		left_height,right_height=0,0
-		if cur_node.left_child!=None:
-			left_height=cur_node.left_child.height
-		if cur_node.right_child!=None:
-			right_height=cur_node.right_child.height
+		left_height=self.get_height(cur_node.left_child)
+		right_height=self.get_height(cur_node.right_child)
 
 		if abs(left_height-right_height)>1:
 			y=self.taller_child(cur_node)
@@ -285,18 +276,16 @@ class AVLTree:
 			self._right_rotate(y)
 			self._left_rotate(z)
 		else:
-			raise ValueError('_rebalance_node: z,y,x node configuration not recognized!')
+			raise Exception('_rebalance_node: z,y,x node configuration not recognized!')
 
 	def _right_rotate(self,z):
-		sub_root=z.parent # save parent of input
-		# perform rotation
+		sub_root=z.parent 
 		y=z.left_child
 		t3=y.right_child
 		y.right_child=z
 		z.parent=y
 		z.left_child=t3
 		if t3!=None: t3.parent=z
-		# Re-connect original parent of input
 		y.parent=sub_root
 		if y.parent==None:
 				self.root=y
@@ -305,22 +294,20 @@ class AVLTree:
 				y.parent.left_child=y
 			else:
 				y.parent.right_child=y		
-		# Update heights
+
 		z.height=1+max(self.get_height(z.left_child),
 			self.get_height(z.right_child))
 		y.height=1+max(self.get_height(y.left_child),
 			self.get_height(y.right_child))
 
 	def _left_rotate(self,z):
-		sub_root=z.parent # save parent of input
-		# perform rotation
+		sub_root=z.parent 
 		y=z.right_child
 		t2=y.left_child
 		y.left_child=z
 		z.parent=y
 		z.right_child=t2
 		if t2!=None: t2.parent=z
-		# Re-connect original parent of input
 		y.parent=sub_root
 		if y.parent==None: 
 			self.root=y
@@ -329,7 +316,6 @@ class AVLTree:
 				y.parent.left_child=y
 			else:
 				y.parent.right_child=y
-		# Update heights
 		z.height=1+max(self.get_height(z.left_child),
 			self.get_height(z.right_child))
 		y.height=1+max(self.get_height(y.left_child),
@@ -349,6 +335,4 @@ class AVLTree:
 		else:
 			return cur_node.left_child
 		return cur_node.left_child if left_height>=right_height else cur_node.right_child
-
-
 
