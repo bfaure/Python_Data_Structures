@@ -237,10 +237,6 @@ class AVLTree:
 
 	# Functions added for AVL...
 
-	# Recursively re-calculates the heights for nodes
-	# above cur_node, while re-calculating heights, if it
-	# comes across an instance where the AVL rules are broken it 
-	# will call the rebalance function to fix the problem.
 	def _inspect_insertion(self,cur_node,path=[]):
 		if cur_node.parent==None: return
 
@@ -259,21 +255,76 @@ class AVLTree:
 			self._rebalance_insertion(path)
 			return
 
-		# possibly assign new height to parent of cur_node
 		new_height=1+cur_node.height 
 		if new_height>cur_node.parent.height:
 			cur_node.parent.height=new_height
 
 		self._inspect_insertion(cur_node.parent,path)
 
-	# Returns the height of the provided node, value is based
-	# on the max of the values of the nodes children. If node is
-	# None, value will be 0.
+	def _rebalance_insertion(self,path):
+		z=path[0] # first unbalanced node
+		y=path[1] # child of z that comes on path from latest insert
+		x=path[2] # grandchild of z that comes on path from latest insert
+
+		if y==z.left_child and x==y.left_child:
+			self.right_rotate(z)
+
+		elif y==z.left_child and x==y.right_child:
+			self.left_rotate(y)
+			self.right_rotate(z)
+
+		elif y==z.right_child and x==y.right_child:
+			self.left_rotate(z)
+
+		elif y==z.right_child and x==y.left_child:
+			self.right_rotate(y)
+			self.left_rotate(z)
+
+		else:
+			raise ValueError('Path state could not be identified!')
+
+
+	def _inspect_deletion(self,cur_node):
+		if cur_node==None: return
+
+		left_height,right_height=0,0
+		if cur_node.left_child!=None:
+			left_height=cur_node.left_child.height
+		if cur_node.right_child!=None:
+			right_height=cur_node.right_child.height
+
+		if abs(left_height-right_height)>1:
+			self._rebalance_deletion(cur_node)
+
+		self._inspect_deletion(cur_node.parent)
+
+	def _rebalance_deletion(self,cur_node):
+		z=cur_node # first unbalanced node
+		y=self.taller_child(z) # larger-height child of z
+		x=self.taller_child(y) # larger-height child of y
+
+		if y==z.left_child and x==y.left_child:
+			self.right_rotate(z)
+
+		elif y==z.left_child and x==y.right_child:
+			self.left_rotate(y)
+			self.right_rotate(z)
+
+		elif y==z.right_child and x==y.right_child:
+			self.left_rotate(z)
+
+		elif y==z.right_child and x==y.left_child:
+			self.right_rotate(y)
+			self.left_rotate(z)
+
+		else:
+			raise ValueError('Node configuration could not be identified!')
+
+
 	def get_height(self,cur_node):
 		if cur_node==None: return 0
 		return cur_node.height
 
-	# Performs right rotation operation on provided node.
 	def right_rotate(self,z):
 		sub_root=z.parent # save parent of input
 		# perform rotation
@@ -298,7 +349,6 @@ class AVLTree:
 		y.height=1+max(self.get_height(y.left_child),
 			self.get_height(y.right_child))
 
-	# Performs left rotation operation on provided node.
 	def left_rotate(self,z):
 		sub_root=z.parent # save parent of input
 		# perform rotation
@@ -323,39 +373,10 @@ class AVLTree:
 		y.height=1+max(self.get_height(y.left_child),
 			self.get_height(y.right_child))
 
-
-	# Provided an instance where AVL rules are broken from _inspect_insertion
-	# this function will figure out which of the 4 cases the node is in and will
-	# take action accordingly to fix the issue.
-	def _rebalance_insertion(self,path):
-		z=path[0] # first unbalanced node
-		y=path[1] # child of z that comes on path from latest insert
-		x=path[2] # grandchild of z that comes on path from latest insert
-
-		if y==z.left_child and x==y.left_child:
-			self.right_rotate(z)
-
-		elif y==z.left_child and x==y.right_child:
-			self.left_rotate(y)
-			self.right_rotate(z)
-
-		elif y==z.right_child and x==y.right_child:
-			self.left_rotate(z)
-
-		elif y==z.right_child and x==y.left_child:
-			self.right_rotate(y)
-			self.left_rotate(z)
-
-		else:
-			raise ValueError('Path state could not be identified!')
-
-
-	# Provided a node in the tree, returns either the left or
-	# right child, depending on which has the higher height value.
 	def taller_child(self,cur_node):
-		if cur_node.left_child!=None:
+		if cur_node.left_child!=None: 
 			left_height=cur_node.left_child.height
-		else:
+		else: 
 			return cur_node.right_child
 		if cur_node.right_child!=None:
 			right_height=cur_node.right_child.height
@@ -363,54 +384,7 @@ class AVLTree:
 			return cur_node.left_child
 		return cur_node.left_child if left_height>=right_height else cur_node.right_child
 
-	# Provided an instance where AVL rules are broken from _inspect_deletion
-	# this function will figure out which of the 4 cases the node is in and will
-	# take action accordingly to fix the issue.
-	def _rebalance_deletion(self,cur_node):
-		z=cur_node # first unbalanced node
-		y=self.taller_child(z) # larger-height child of z
-		x=self.taller_child(y) # larger-height child of y
 
-		if y==z.left_child and x==y.left_child:
-			self.right_rotate(z)
-
-		elif y==z.left_child and x==y.right_child:
-			self.left_rotate(y)
-			self.right_rotate(z)
-
-		elif y==z.right_child and x==y.right_child:
-			self.left_rotate(z)
-
-		elif y==z.right_child and x==y.left_child:
-			self.right_rotate(y)
-			self.left_rotate(z)
-
-		else:
-			raise ValueError('Node configuration could not be identified!')
-
-	# Should only be called from delete_node, similar to _inspect_insertion
-	# except it is not terminated once a single identified portion of the tree
-	# is fixed, in the case of deletion fixing a single unbalanced section
-	# may cause another to pop up higher in the tree.
-	def _inspect_deletion(self,cur_node):
-		if cur_node==None: return
-
-		left_height,right_height=0,0
-		if cur_node.left_child!=None:
-			left_height=cur_node.left_child.height
-		if cur_node.right_child!=None:
-			right_height=cur_node.right_child.height
-
-		# calculate the balance factor
-		if abs(left_height-right_height)>1:
-			print 'Need to rebalance deletion!'
-			self._rebalance_deletion(cur_node)
-
-		self._inspect_deletion(cur_node.parent)
-
-	# Validates the height of every node in the tree by comparing its 
-	# stored 'height' value (inside the node instance) to the return value
-	# of the self._height function which accurately calculates the height.
 	def validate_heights(self,cur_node=None):
 		if cur_node==None:
 			cur_node=self.root 
@@ -430,28 +404,25 @@ class AVLTree:
 def test(n=10):
 	a=AVLTree()
 	for i in range(n):
+		print "inserting",i
 		a.insert(i)
+		print a
+		a.validate_heights()
 
 	print "Full tree..."
 	print a
 
-	print "Validating heights..."
 	a.validate_heights()
-	print "Validation complete!"
 
 	for i in range(n):
 		print "deleting ",i
 		a.delete_value(i)
 		print a
-		print "Validating heights..."
 		a.validate_heights()
-		print "Validation complete!"
 
 	print a 
 
-	print "Validating heights..."
 	a.validate_heights()
-	print "Validation complete!"
 
 test()
 
