@@ -293,7 +293,6 @@ class AVLTree:
 				y.parent.left_child=y
 			else:
 				y.parent.right_child=y		
-
 		z.height=1+max(self.get_height(z.left_child),
 			self.get_height(z.right_child))
 		y.height=1+max(self.get_height(y.left_child),

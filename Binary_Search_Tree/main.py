@@ -79,11 +79,6 @@ class binary_search_tree:
 		if node==None or self.find(node.value)==None:
 			print "Node to be deleted not found in the tree!"
 			return None 
-
-		# If the node to be deleted is the root node
-		if node.parent==None:
-			self.root=None 
-			return None 
 		## -----
 
 		# returns the node with min value in tree rooted at input node
@@ -112,11 +107,16 @@ class binary_search_tree:
 		# CASE 1 (node has no children)
 		if node_children==0:
 
-			# remove reference to the node from the parent
-			if node_parent.left_child==node:
-				node_parent.left_child=None
+			# Added this if statement post-video, previously if you 
+			# deleted the root node it would delete entire tree.
+			if node_parent!=None:
+				# remove reference to the node from the parent
+				if node_parent.left_child==node:
+					node_parent.left_child=None
+				else:
+					node_parent.right_child=None
 			else:
-				node_parent.right_child=None
+				self.root=None
 
 		# CASE 2 (node has a single child)
 		if node_children==1:
@@ -127,11 +127,16 @@ class binary_search_tree:
 			else:
 				child=node.right_child
 
-			# replace the node to be deleted with its child
-			if node_parent.left_child==node:
-				node_parent.left_child=child
+			# Added this if statement post-video, previously if you 
+			# deleted the root node it would delete entire tree.
+			if node_parent!=None:
+				# replace the node to be deleted with its child
+				if node_parent.left_child==node:
+					node_parent.left_child=child
+				else:
+					node_parent.right_child=child
 			else:
-				node_parent.right_child=child
+				self.root=child
 
 			# correct the parent pointer in node
 			child.parent=node_parent
