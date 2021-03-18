@@ -1,9 +1,10 @@
-
+# Each node contains a 'data' and link to the 'next' node
 class node:
 	def __init__(self,data=None):
 		self.data=data
 		self.next=None
 
+# linked_list contains the nodes that we created above.
 class linked_list:
 	def __init__(self):
 		self.head=node()
